@@ -36,6 +36,12 @@
 #define STDIN_KBD_KBC ""
 #endif
 
+#ifdef CONFIG_GPIO_KEYS
+#define STDIN_GPIO_KEYS ",gpio-keys-in"
+#else
+#define STDIN_GPIO_KEYS ""
+#endif
+
 #ifdef CONFIG_USB_KEYBOARD
 #define STDIN_KBD_USB ",usbkbd"
 #else
@@ -61,7 +67,7 @@
 #endif
 
 #define TEGRA_DEVICE_SETTINGS \
-	"stdin=serial" STDIN_KBD_KBC STDIN_KBD_USB STDOUT_CROS_EC "\0" \
+	"stdin=serial" STDIN_KBD_KBC STDIN_KBD_USB STDOUT_CROS_EC STDIN_GPIO_KEYS "\0" \
 	"stdout=serial" STDOUT_LCD STDOUT_VIDEO "\0" \
 	"stderr=serial" STDOUT_LCD STDOUT_VIDEO "\0" \
 	""

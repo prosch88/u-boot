@@ -232,6 +232,7 @@ dtb-$(CONFIG_ARCH_TEGRA) += \
 	tegra30-colibri.dtb \
 	tegra30-lge-p880.dtb \
 	tegra30-lge-p895.dtb \
+	tegra30-surface-rt.dtb \
 	tegra30-tec-ng.dtb \
 	tegra114-dalmore.dtb \
 	tegra124-apalis.dtb \

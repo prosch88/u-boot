@@ -1,0 +1,6 @@
+Microsoft Surface RT
+M:	Jonas Schwöbel <jonasschwoebel@yahoo.de>
+S:	Maintained
+F:	board/microsoft/surface-rt/
+F:	include/configs/surface-rt.h
+F:	configs/surface-rt_defconfig

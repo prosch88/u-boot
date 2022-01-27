@@ -1004,24 +1004,14 @@ static int is_gpt_valid(struct blk_desc *dev_desc, u64 lba,
 static int find_valid_gpt(struct blk_desc *dev_desc, gpt_header *gpt_head,
 			  gpt_entry **pgpt_pte)
 {
-	int r;
-
-	r = is_gpt_valid(dev_desc, GPT_PRIMARY_PARTITION_TABLE_LBA, gpt_head,
-			 pgpt_pte);
-
-	if (r != 1) {
-		if (r != 2)
-			printf("%s: *** ERROR: Invalid GPT ***\n", __func__);
-
+	if (is_gpt_valid(dev_desc, GPT_PRIMARY_PARTITION_TABLE_LBA, gpt_head,
+		pgpt_pte) != 1) {
 		if (is_gpt_valid(dev_desc, (dev_desc->lba - 1), gpt_head,
 				 pgpt_pte) != 1) {
 			printf("%s: *** ERROR: Invalid Backup GPT ***\n",
 			       __func__);
 			return 0;
 		}
-		if (r != 2)
-			printf("%s: ***        Using Backup GPT ***\n",
-			       __func__);
 	}
 	return 1;
 }

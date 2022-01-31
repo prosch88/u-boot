@@ -11,6 +11,7 @@
 #include <part.h>
 #include <pwm.h>
 #include <video.h>
+#include <video_bridge.h>
 #include <asm/cache.h>
 #include <asm/global_data.h>
 #include <asm/system.h>
@@ -32,6 +33,7 @@ struct tegra_lcd_priv {
 	int height;			/* height in pixels */
 	enum video_log2_bpp log2_bpp;	/* colour depth */
 	struct display_timing timing;
+	struct udevice *bridge;
 	struct udevice *panel;
 	struct disp_ctlr *disp;		/* Display controller to use */
 	fdt_addr_t frame_buffer;	/* Address of frame buffer */
@@ -320,6 +322,14 @@ static int tegra_lcd_probe(struct udevice *dev)
 	pinmux_tristate_disable(PMUX_PINGRP_GPU);
 #endif
 
+	if (priv->bridge) {
+		ret = video_bridge_attach(priv->bridge);
+		if (ret) {
+			debug("%s: Cannot attach bridge, ret=%d\n", __func__, ret);
+			return ret;
+		}
+	}
+
 	ret = panel_enable_backlight(priv->panel);
 	if (ret) {
 		debug("%s: Cannot enable backlight, ret=%d\n", __func__, ret);
@@ -347,6 +357,7 @@ static int tegra_lcd_of_to_plat(struct udevice *dev)
 	const void *blob = gd->fdt_blob;
 	struct display_timing *timing;
 	int node = dev_of_offset(dev);
+	int bridge_node;
 	int panel_node;
 	int rgb;
 	int ret;
@@ -377,9 +388,20 @@ static int tegra_lcd_of_to_plat(struct udevice *dev)
 	priv->log2_bpp = VIDEO_BPP16;
 
 	/*
-	 * Sadly the panel phandle is in an rgb subnode so we cannot use
-	 * uclass_get_device_by_phandle().
+	 * Sadly the panel and bridge phandle is in an rgb subnode
+	 * so we cannot use uclass_get_device_by_phandle().
 	 */
+	bridge_node = fdtdec_lookup_phandle(blob, rgb, "dpi,bridge");
+	if (bridge_node >= 0) {
+		ret = uclass_get_device_by_of_offset(UCLASS_VIDEO_BRIDGE, bridge_node,
+					     &priv->bridge);
+		if (ret) {
+			debug("%s: Cannot find bridge for '%s' (ret=%d)\n", __func__,
+			      dev->name, ret);
+			return ret;
+		}
+	}
+
 	panel_node = fdtdec_lookup_phandle(blob, rgb, "nvidia,panel");
 	if (panel_node < 0) {
 		debug("%s: Cannot find panel information\n", __func__);

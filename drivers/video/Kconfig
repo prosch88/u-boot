@@ -640,6 +640,7 @@ source "drivers/video/stm32/Kconfig"
 config VIDEO_TEGRA20
 	bool "Enable LCD support on Tegra20"
 	depends on OF_CONTROL
+	select VIDEO_BRIDGE
 	help
 	   Tegra20 supports video output to an attached LCD panel as well as
 	   other options such as HDMI. Only the LCD is supported in U-Boot.

@@ -161,7 +161,7 @@
 		power {
 			label = "Power";
 			gpios = <&gpio TEGRA_GPIO(V, 0) GPIO_ACTIVE_HIGH>;
-			linux,code = <KEY_ENTER>;
+			linux,code = <KEY_CANCEL>;
 		};
 
 		volume-up {

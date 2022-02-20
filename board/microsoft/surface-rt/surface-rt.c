@@ -18,6 +18,24 @@
 #define PMU_I2C_ADDRESS		0x2D
 #define MAX_I2C_RETRY		3
 
+#define TPS65911_LDO1		0x30
+#define TPS65911_LDO2		0x31
+#define TPS65911_LDO5		0x32
+#define TPS65911_LDO3		0x37
+
+#define TPS65911_GPIO0		0x60
+#define TPS65911_GPIO1		0x61
+#define TPS65911_GPIO2		0x62
+#define TPS65911_GPIO3		0x63
+#define TPS65911_GPIO4		0x64
+#define TPS65911_GPIO5		0x65
+#define TPS65911_GPIO6		0x66
+#define TPS65911_GPIO7		0x67
+#define TPS65911_GPIO8		0x68
+
+#define TPS65911_DEVCTRL	0x3F
+
+
 /*
  * Routine: pinmux_init
  * Description: Do individual peripheral pinmux configs
@@ -42,9 +60,24 @@ void pinmux_init(void)
 void board_sdmmc_voltage_init(void)
 {
 	struct udevice *dev;
-	uchar reg, data_buffer[1];
+	uchar data_buffer[1];
 	int ret;
 	int i;
+
+	// Enable Wifi power
+	gpio_request(TEGRA_GPIO(D, 4), "MRVL-SD8797_Wifi_Enable");
+	gpio_direction_output(TEGRA_GPIO(D, 4), 0);
+	udelay(5);
+	gpio_set_value(TEGRA_GPIO(D, 4), 1);
+	printf("Enabled MRVL-SD8797 WiFi GPIO D4\n");
+
+	// Disable USB VBus
+	gpio_request(TEGRA_GPIO(DD, 6), "usb1_regulator_enable");
+	gpio_direction_output(TEGRA_GPIO(DD, 6), 0);
+	udelay(5);
+	// disable USB VBus to prevent shorting Surface RT VBus to Host PC
+	// USB module can enable it if the controller is in host mode.
+	gpio_set_value(TEGRA_GPIO(DD, 6), 0);
 
 	ret = i2c_get_chip_for_busnum(0, PMU_I2C_ADDRESS, 1, &dev);
 	if (ret) {
@@ -54,10 +87,57 @@ void board_sdmmc_voltage_init(void)
 
 	/* TPS659110: LDO5_REG = 3.3v, ACTIVE to SDMMC1 */
 	data_buffer[0] = 0x65;
-	reg = 0x32;
-
 	for (i = 0; i < MAX_I2C_RETRY; ++i) {
-		if (dm_i2c_write(dev, reg, data_buffer, 1))
+		if (dm_i2c_write(dev, TPS65911_LDO5, data_buffer, 1))
+			udelay(100);
+	}
+
+	/* TPS659110: LDO1_REG = 3.3v, ACTIVE to SDMMC4 */ // really realted to coverkeyboard
+	data_buffer[0] = 0xc9;
+	for (i = 0; i < MAX_I2C_RETRY; ++i) {
+		if (dm_i2c_write(dev, TPS65911_LDO1, data_buffer, 1))
+			udelay(100);
+	}
+
+	/* TPS659110: LDO2_REG = 3.1v, ACTIVE to SDMMC1 */
+	data_buffer[0] = 0x15; //was = data_buffer[0] = 0xb9; 15
+	for (i = 0; i < MAX_I2C_RETRY; ++i) {
+		if (dm_i2c_write(dev, TPS65911_LDO2, data_buffer, 1))
+			udelay(100);
+	}
+
+	/* TPS659110: LDO3_REG = 3.1v, ACTIVE to SDMMC1 VIO */// - enables touchkeyboard.
+	data_buffer[0] = 0x5d;
+	for (i = 0; i < MAX_I2C_RETRY; ++i) {
+		if (dm_i2c_write(dev, TPS65911_LDO3, data_buffer, 1))
+			udelay(100);
+	}
+
+		/* TPS659110: GPIO0_REG output high to VDD_5V0_SBY */
+	data_buffer[0] = 0x07;
+	for (i = 0; i < MAX_I2C_RETRY; ++i) {
+		if (dm_i2c_write(dev, TPS65911_GPIO0, data_buffer, 1))
+			udelay(100);
+	}
+
+	/* TPS659110: GPIO6_REG output high to VDD_3V3_SYS */
+	data_buffer[0] = 0x07;
+	for (i = 0; i < MAX_I2C_RETRY; ++i) {
+		if (dm_i2c_write(dev, TPS65911_GPIO6, data_buffer, 1))
+			udelay(100);
+	}
+
+	/* TPS659110: GPIO7_REG output high to VDD_1V5_DDR */
+	data_buffer[0] = 0x09; // was = data_buffer[0] = 0x07;
+	for (i = 0; i < MAX_I2C_RETRY; ++i) {
+		if (dm_i2c_write(dev, TPS65911_GPIO7, data_buffer, 1))
+			udelay(100);
+	}
+
+	/* TPS659110: GPIO8_REG pull_down output high to VDD_5V0_SYS */
+	data_buffer[0] = 0x0f;
+	for (i = 0; i < MAX_I2C_RETRY; ++i) {
+		if (dm_i2c_write(dev, TPS65911_GPIO8, data_buffer, 1))
 			udelay(100);
 	}
 }

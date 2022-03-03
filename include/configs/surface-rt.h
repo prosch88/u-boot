@@ -16,6 +16,17 @@
 /* High-level configuration options */
 #define CONFIG_TEGRA_BOARD_STRING	"Microsoft Surface RT"
 
+#define SURFACE_RT_BOOT_SCRIPT_SD \
+       "boot_scr_sd=echo 'Run bootscript from SD ...';" \
+               "load mmc 1 ${loadaddr} /boot.scr;" \
+               "source\0"
+
+#define SURFACE_RT_BOOT_SCRIPT_MMC \
+       "boot_scr_mmc=echo 'Run bootscript from MMC ...';" \
+               "load mmc 0 ${loadaddr} /boot.scr;" \
+               "source\0"
+
+
 #define BOARD_EXTRA_ENV_SETTINGS \
 	"kernel_addr_r=0x80008000\0" \
 	"dtb_addr_r=0x83000000\0" \
@@ -26,12 +37,16 @@
 	"ramdisk_file=initramfs\0" \
 	"bootkernel=bootz ${kernel_addr_r} - ${dtb_addr_r}\0" \
 	"bootrdkernel=bootz ${kernel_addr_r} ${ramdisk_addr_r} ${dtb_addr_r}\0" \
+	SURFACE_RT_BOOT_SCRIPT_SD \
+	SURFACE_RT_BOOT_SCRIPT_MMC \
 	"bootmenu_0=Linux=boot\0" \
 	"bootmenu_1=USB Mass Storage - eMMC=ums 0 mmc 0;reset\0" \
 	"bootmenu_2=USB Mass Storage - SD Card=ums 0 mmc 1;reset\0" \
 	"bootmenu_3=fastboot=fastboot usb 0;reset\0" \
 	"bootmenu_4=USB Boot=run bootcmd_usb0\0" \
 	"bootmenu_5=RCM Mode=enterrcm\0" \
+	"bootmenu_6=Boot Bootscript - MMC=run boot_scr_mmc\0" \
+	"bootmenu_7=Boot Bootscript - SD=run boot_scr_sd\0" \
 	"bootmenu_delay=-1\0"
 
 /* Board-specific serial config */

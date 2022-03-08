@@ -26,6 +26,12 @@
                "load mmc 0 ${loadaddr} /boot.scr;" \
                "source\0"
 
+#define SURFACE_RT_BOOT_DOWNSTREAM_SD \
+       "boot_downstream_sd=echo 'Boot downstream from SD ...';" \
+               "env set bootargs 'console=ttyS0,115200n8 debug_uartport=lsport,0';" \
+               "load mmc 1:1 ${kernel_addr_r} /uImage;" \
+               "bootm ${kernel_addr_r}\0"
+
 
 #define BOARD_EXTRA_ENV_SETTINGS \
 	"kernel_addr_r=0x80008000\0" \
@@ -39,14 +45,16 @@
 	"bootrdkernel=bootz ${kernel_addr_r} ${ramdisk_addr_r} ${dtb_addr_r}\0" \
 	SURFACE_RT_BOOT_SCRIPT_SD \
 	SURFACE_RT_BOOT_SCRIPT_MMC \
-	"bootmenu_0=Linux=boot\0" \
-	"bootmenu_1=Boot Bootscript - MMC=run boot_scr_mmc\0" \
-	"bootmenu_2=Boot Bootscript - SD=run boot_scr_sd\0" \
-	"bootmenu_3=USB Mass Storage - eMMC=ums 0 mmc 0\0" \
-	"bootmenu_4=USB Mass Storage - SD Card=ums 0 mmc 1\0" \
-	"bootmenu_5=fastboot=fastboot usb 0\0" \
-	"bootmenu_6=USB Boot=run bootcmd_usb0\0" \
-	"bootmenu_7=RCM Mode=enterrcm\0" \
+	SURFACE_RT_BOOT_DOWNSTREAM_SD \
+	"bootmenu_0=Downstream=run boot_downstream_sd\0" \
+	"bootmenu_1=Linux=boot\0" \
+	"bootmenu_2=Boot Bootscript - MMC=run boot_scr_mmc\0" \
+	"bootmenu_3=Boot Bootscript - SD=run boot_scr_sd\0" \
+	"bootmenu_4=USB Mass Storage - eMMC=ums 0 mmc 0\0" \
+	"bootmenu_5=USB Mass Storage - SD Card=ums 0 mmc 1\0" \
+	"bootmenu_6=fastboot=fastboot usb 0\0" \
+	"bootmenu_7=USB Boot=run bootcmd_usb0\0" \
+	"bootmenu_8=RCM Mode=enterrcm\0" \
 	"bootmenu_delay=-1\0"
 
 /* Board-specific serial config */

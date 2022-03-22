@@ -35,6 +35,7 @@
 #define SURFACE_RT_ENV_COMMON \
 	"loaded_dtb=0;" \
 	"loaded_initramfs=0;" \
+	"usb start;" \
 	"if test -n ${dtb_file}; then " \
 		"if test -e ${dev_type} ${load_dev}:${load_part} ${dtb_file}; then " \
 			"if load ${dev_type} ${load_dev}:${load_part} ${fdt_addr_r} ${dtb_file}; then " \
@@ -68,7 +69,7 @@
 					"bootz ${kernel_addr_r} ${ramdisk_addr_r} ${fdt_addr_r};" \
 				"elif test $loaded_dtb -eq 1; then " \
 					"echo kernel / dt;" \
-					"bootkernel=bootz ${kernel_addr_r} - ${fdt_addr_r};" \
+					"bootz ${kernel_addr_r} - ${fdt_addr_r};" \
 				"elif test $loaded_initramfs -eq 1; then " \
 					"echo kernel / init;" \
 					"bootz ${kernel_addr_r} ${ramdisk_addr_r};" \
@@ -125,7 +126,7 @@
 	SURFACE_RT_ENV_MMC \
 	"bootmenu_0=Linux=boot\0" \
 	"bootmenu_1=Env eMMC=run boot_env_mmc; bootmenu;\0" \
-	"bootmenu_2=Env SD=run boot_env_sd; bootmenu;\0" \
+	"bootmenu_2=Env SD=run boot_env_sd; sleep 10; bootmenu;\0" \
 	"bootmenu_3=USB Mass Storage - eMMC=ums 0 mmc 0; bootmenu;\0" \
 	"bootmenu_4=USB Mass Storage - SD Card=ums 0 mmc 1; bootmenu;\0" \
 	"bootmenu_5=Fastboot=fastboot usb 0\0" \

@@ -226,6 +226,7 @@ dtb-$(CONFIG_ARCH_TEGRA) += \
 	tegra30-beaver.dtb \
 	tegra30-cardhu.dtb \
 	tegra30-colibri.dtb \
+	tegra30-ideapad-yoga-11.dtb \
 	tegra30-tec-ng.dtb \
 	tegra114-dalmore.dtb \
 	tegra124-apalis.dtb \
@@ -927,12 +928,9 @@ dtb-$(CONFIG_ARCH_IMX8M) += \
 	imx8mq-cm.dtb \
 	imx8mn-evk.dtb \
 	imx8mn-var-som-symphony.dtb \
-	imx8mn-venice.dtb \
-	imx8mn-venice-gw7902.dtb \
 	imx8mq-evk.dtb \
 	imx8mm-beacon-kit.dtb \
 	imx8mn-beacon-kit.dtb \
-	imx8mq-mnt-reform2.dtb \
 	imx8mq-phanbell.dtb \
 	imx8mp-evk.dtb \
 	imx8mp-phyboard-pollux-rdk.dtb \
@@ -1154,9 +1152,7 @@ dtb-$(CONFIG_SOC_K3_AM6) += \
 dtb-$(CONFIG_SOC_K3_J721E) += k3-j721e-common-proc-board.dtb \
 			      k3-j721e-r5-common-proc-board.dtb \
 			      k3-j7200-common-proc-board.dtb \
-			      k3-j7200-r5-common-proc-board.dtb \
-			      k3-j721e-sk.dtb \
-			      k3-j721e-r5-sk.dtb
+			      k3-j7200-r5-common-proc-board.dtb
 dtb-$(CONFIG_SOC_K3_J721S2) += k3-j721s2-common-proc-board.dtb\
 			       k3-j721s2-r5-common-proc-board.dtb
 dtb-$(CONFIG_SOC_K3_AM642) += k3-am642-evm.dtb \
@@ -1218,15 +1214,9 @@ dtb-$(CONFIG_TARGET_IMX8MM_CL_IOT_GATE_OPTEE) += imx8mm-cl-iot-gate-optee.dtb \
 					imx8mm-cl-iot-gate-ied-tpm0.dtbo \
 					imx8mm-cl-iot-gate-ied-tpm1.dtbo
 
-ifneq ($(CONFIG_TARGET_IMX8MP_RSB3720A1_4G)$(CONFIG_TARGET_IMX8MP_RSB3720A1_6G),)
-dtb-y += imx8mp-rsb3720-a1.dtb
-endif
-
 dtb-$(CONFIG_TARGET_EA_LPC3250DEVKITV2) += lpc3250-ea3250.dtb
 
 dtb-$(CONFIG_ARCH_QEMU) += qemu-arm.dtb qemu-arm64.dtb
-
-include $(srctree)/scripts/Makefile.dts
 
 targets += $(dtb-y)
 

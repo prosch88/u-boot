@@ -28,11 +28,16 @@ config TARGET_TRANSFORMER_T30
 	bool "Asus Tegra30 Transformer board"
 	select BOARD_LATE_INIT
 
+config TARGET_IDEAPAD_YOGA_11
+	bool "Lenovo Ideapad Yoga 11 board"
+	select BOARD_LATE_INIT
+
 endchoice
 
 config SYS_SOC
 	default "tegra30"
 
+source "board/lenovo/ideapad-yoga-11/Kconfig"
 source "board/asus/transformer-t30/Kconfig"
 source "board/toradex/apalis_t30/Kconfig"
 source "board/nvidia/beaver/Kconfig"

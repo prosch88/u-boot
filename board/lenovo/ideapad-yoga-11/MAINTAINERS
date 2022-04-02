@@ -1,0 +1,6 @@
+Lenovo Ideapad Yoga 11
+M:	Jonas Schwöbel <jonasschwoebel@yahoo.de>
+S:	Maintained
+F:	board/lenovo/ideapad-yoga-11/
+F:	include/configs/ideapad-yoga-11.h
+F:	configs/ideapad-yoga-11_defconfig

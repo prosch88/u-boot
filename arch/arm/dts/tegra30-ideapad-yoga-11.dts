@@ -65,6 +65,26 @@
 		status = "okay";
 	};
 
+	i2c@7000c000 {
+		status = "okay";
+		clock-frequency = <100000>;
+	};
+
+	i2c@7000c400 {
+		status = "okay";
+		clock-frequency = <100000>;
+	};
+
+	i2c@7000c500 {
+		status = "okay";
+		clock-frequency = <100000>;
+	};
+
+	i2c@7000c700 {
+		status = "okay";
+		clock-frequency = <100000>;
+	};
+
 	i2c@7000d000 {
 		status = "okay";
 		clock-frequency = <400000>;
@@ -88,6 +108,7 @@
 			};
 		};
 	};
+	
 
 	sdmmc1: sdhci@78000000 {
 		status = "okay";

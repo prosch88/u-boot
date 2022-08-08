@@ -46,6 +46,18 @@ void board_sdmmc_voltage_init(void)
 	int ret;
 	int i;
 
+	gpio_request(TEGRA_GPIO(U, 4), "Touchpad enable");
+	gpio_direction_output(TEGRA_GPIO(U, 4), 0);
+	udelay(5);
+	gpio_set_value(TEGRA_GPIO(U, 4), 1);
+	printf("Touchpad U4\n");
+	
+	gpio_request(TEGRA_GPIO(U, 3), "Touchscreen Enable");
+	gpio_direction_output(TEGRA_GPIO(U, 3), 0);
+	udelay(5);
+	gpio_set_value(TEGRA_GPIO(U, 3), 1);
+	printf("Touchscreen U3\n");
+
 	ret = i2c_get_chip_for_busnum(0, PMU_I2C_ADDRESS, 1, &dev);
 	if (ret) {
 		debug("%s: Cannot find PMIC I2C chip\n", __func__);
@@ -55,6 +67,15 @@ void board_sdmmc_voltage_init(void)
 	/* TPS659110: LDO3_REG = 3.3v, ACTIVE to SDMMC1 */
 	data_buffer[0] = 0x65;
 	reg = 0x37;
+
+	for (i = 0; i < MAX_I2C_RETRY; ++i) {
+		if (dm_i2c_write(dev, reg, data_buffer, 1))
+			udelay(100);
+	}
+	
+	/* TPS659110: GPIO8_REG = Output High */
+	data_buffer[0] = 0x07;
+	reg = 0x68;
 
 	for (i = 0; i < MAX_I2C_RETRY; ++i) {
 		if (dm_i2c_write(dev, reg, data_buffer, 1))

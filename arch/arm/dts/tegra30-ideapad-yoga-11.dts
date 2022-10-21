@@ -145,7 +145,7 @@
 		pwms = <&pwm 0 4000000>;
 
 		brightness-levels = <228 255>;
-		default-brightness-level = <228>;
+		default-brightness-level = <255>;
 	};
 
 	clocks {
@@ -219,7 +219,7 @@
 		compatible = "simple-panel";
 
 		power-supply = <&vdd_pnl_reg>;
-		enable-gpios = <&gpio TEGRA_GPIO(C, 1) GPIO_ACTIVE_LOW>;
+		enable-gpios = <&gpio TEGRA_GPIO(C, 1) GPIO_ACTIVE_HIGH>;
 
 		backlight = <&backlight>;
 	};

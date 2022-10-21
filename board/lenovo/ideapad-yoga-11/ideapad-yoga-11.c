@@ -18,6 +18,8 @@
 #define PMU_I2C_ADDRESS		0x2D
 #define MAX_I2C_RETRY		3
 
+void setup_bridge(void);
+
 /*
  * Routine: pinmux_init
  * Description: Do individual peripheral pinmux configs
@@ -58,9 +60,57 @@ void board_sdmmc_voltage_init(void)
 	gpio_set_value(TEGRA_GPIO(U, 3), 1);
 	printf("Touchscreen U3\n");
 
-	ret = i2c_get_chip_for_busnum(0, PMU_I2C_ADDRESS, 1, &dev);
+// Panel
+	gpio_request(TEGRA_GPIO(L, 4), "vdd-panel");
+
+	
+	mdelay(200);
+// Panel
+
+// Bridge
+	gpio_request(TEGRA_GPIO(P, 0), "bridge power");
+	gpio_request(TEGRA_GPIO(C, 1), "bridge shutdown");
+	gpio_request(TEGRA_GPIO(Z, 3), "bridge reset");
+	
+	gpio_direction_output(TEGRA_GPIO(P, 0), 0);
+	gpio_direction_output(TEGRA_GPIO(C, 1), 0);
+	gpio_direction_output(TEGRA_GPIO(Z, 3), 0);
+	
+	udelay(5);
+
+	gpio_set_value(TEGRA_GPIO(P, 0), 1);
+	udelay(50);
+	gpio_set_value(TEGRA_GPIO(C, 1), 1);
+	udelay(50);
+	gpio_set_value(TEGRA_GPIO(Z, 3), 1);
+	mdelay(50);
+// Bridge
+
+
+
+gpio_direction_output(TEGRA_GPIO(L, 4), 1);
+
+mdelay(10);
+
+// Backlight
+	gpio_request(TEGRA_GPIO(H, 0), "backlight enable");
+	gpio_request(TEGRA_GPIO(H, 2), "backlight pwm");
+	
+	gpio_direction_output(TEGRA_GPIO(H, 2), 1); // pwm
+	mdelay(1);
+	gpio_direction_output(TEGRA_GPIO(H, 0), 1); // enable
+	
+// Backlight
+mdelay(10);
+
+	setup_bridge();
+
+
+
+
+	ret = i2c_get_chip_for_busnum(4, PMU_I2C_ADDRESS, 1, &dev);
 	if (ret) {
-		debug("%s: Cannot find PMIC I2C chip\n", __func__);
+		printf("%s: Cannot find PMIC I2C chip: %d\n", __func__, ret);
 		return;
 	}
 
@@ -98,3 +148,63 @@ void pin_mux_mmc(void)
 	board_sdmmc_voltage_init();
 }
 #endif	/* MMC */
+
+int bridge_write_reg(struct udevice *dev, uchar reg, uchar data_buffer) {
+	return  dm_i2c_reg_write(dev, reg, data_buffer);
+}
+
+int bridge_read_reg(struct udevice *dev, uchar reg) {
+	return dm_i2c_reg_read(dev, reg);
+}
+
+int bridge_xfer(struct udevice *dev, struct i2c_msg *msg, int nmsgs) {
+	return dm_i2c_xfer(dev, msg, nmsgs);
+}
+
+
+void setup_bridge(void)  {
+	printf("Start Bridge Setup\n");
+	struct udevice *dev;
+	int ret;
+
+	ret = i2c_get_chip_for_busnum(1, 0x8, 1, &dev);
+	if (ret) {
+		printf("%s: Cannot find Bridge I2C chip: %d\n", __func__, ret);
+		return;
+	}
+	
+	bridge_write_reg(dev, 0x0A, 0x30);
+	udelay(310);
+	bridge_write_reg(dev, 0x0A, 0x0C);
+	udelay(110);
+	bridge_write_reg(dev, 0x8F, 0x02);
+	
+	
+	// check for lowest bit
+	u8 in_buf = 0x8D, out_buf = 0;
+	struct i2c_msg msgs[2]= {
+		{ 0x08, 0,		1, &in_buf },
+		{ 0x08, I2C_M_RD,	1, &out_buf }
+	};
+
+	int counter = 0;
+
+//gpio_set_value(TEGRA_GPIO(L, 4), 1);
+
+	do {
+		udelay(1110);
+		bridge_xfer(dev, msgs, 2);
+		printf("Checking 0x8D: %02X\n", out_buf);
+		out_buf = 0;
+		
+		counter++;
+		if (counter > 100) goto fail;
+	} while(!(out_buf & 0x04));
+	
+	printf("Bridge came up!\n");
+
+fail:
+	printf("setup failed\n\n");
+}
+
+

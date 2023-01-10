@@ -110,6 +110,18 @@
 		"fi;" \
 		SURFACE_RT_ENV_COMMON
 
+#define SURFACE_RT_ENV_USB \
+	"boot_env_usb=echo Loading boot env from USB;" \
+		"if load usb 0:0 ${loadaddr} uboot.env; then " \
+			"env import -t -r ${loadaddr} ${filesize};" \
+		"else " \
+			"echo Boot env NOT FOUND on USB!;" \
+			"echo continues in 5s;" \
+			"sleep 5;" \
+			"bootmenu;" \
+		"fi;" \
+		SURFACE_RT_ENV_COMMON
+
 #define BOARD_EXTRA_ENV_SETTINGS \
 	"kernel_addr_r=0x80008000\0" \
 	"dtb_addr_r=0x83000000\0" \
@@ -123,9 +135,9 @@
 	SURFACE_RT_BOOT_SCRIPT_MMC \
 	SURFACE_RT_BOOT_DOWNSTREAM_SD \
 	SURFACE_RT_ENV_SD \
-	SURFACE_RT_ENV_MMC \
+	SURFACE_RT_ENV_USB \
 	"bootmenu_0=Linux=boot\0" \
-	"bootmenu_1=Env eMMC=run boot_env_mmc; bootmenu;\0" \
+	"bootmenu_1=Env USB=run boot_env_usb; sleep 10; bootmenu;\0" \
 	"bootmenu_2=Env SD=run boot_env_sd; sleep 10; bootmenu;\0" \
 	"bootmenu_3=USB Mass Storage - eMMC=ums 0 mmc 0; bootmenu;\0" \
 	"bootmenu_4=USB Mass Storage - SD Card=ums 0 mmc 1; bootmenu;\0" \

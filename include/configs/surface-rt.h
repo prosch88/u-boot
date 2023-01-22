@@ -10,9 +10,6 @@
 
 #include "tegra30-common.h"
 
-/* VDD core PMIC */
-#define CONFIG_TEGRA_VDD_CORE_TPS62361B_SET3
-
 /* High-level configuration options */
 #define CONFIG_TEGRA_BOARD_STRING	"Microsoft Surface RT"
 
@@ -112,7 +109,8 @@
 
 #define SURFACE_RT_ENV_USB \
 	"boot_env_usb=echo Loading boot env from USB;" \
-		"if load usb 0:0 ${loadaddr} uboot.env; then " \
+		"usb start;" \
+		"if load usb 0:1 ${loadaddr} uboot.env; then " \
 			"env import -t -r ${loadaddr} ${filesize};" \
 		"else " \
 			"echo Boot env NOT FOUND on USB!;" \
@@ -151,7 +149,6 @@
 
 #define CONFIG_MACH_TYPE		MACH_TYPE_CARDHU
 
-#include "tegra-common-usb-gadget.h"
 #include "tegra-common-post.h"
 
 #endif /* __CONFIG_H */

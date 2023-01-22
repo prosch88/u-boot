@@ -335,7 +335,8 @@ int uclass_find_device_by_seq(enum uclass_id id, int seq, struct udevice **devp)
 	int ret;
 
 	*devp = NULL;
-	log_debug("%d\n", seq);
+	log_debug("seq: %d\n", seq);
+	log_debug("id: %s\n", uclass_get_name((enum uclass_id)id));
 	if (seq == -1)
 		return -ENODEV;
 	ret = uclass_get(id, &uc);

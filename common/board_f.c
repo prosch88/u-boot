@@ -788,6 +788,7 @@ static int initf_bootstage(void)
 
 static int initf_dm(void)
 {
+	debug("initf_dm: started here\n");
 #if defined(CONFIG_DM) && CONFIG_VAL(SYS_MALLOC_F_LEN)
 	int ret;
 

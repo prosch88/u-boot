@@ -198,7 +198,7 @@ int lists_bind_fdt(struct udevice *parent, ofnode node, struct udevice **devp,
 	if (devp)
 		*devp = NULL;
 	name = ofnode_get_name(node);
-	log_debug("bind node %s\n", name);
+	log_debug("bind node %s ---bind node ---\n", name);
 
 	compat_list = ofnode_get_property(node, "compatible", &compat_length);
 	if (!compat_list) {

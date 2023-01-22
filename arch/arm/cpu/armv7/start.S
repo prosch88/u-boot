@@ -38,6 +38,13 @@
 
 reset:
 	/* Allow the board to save important registers */
+	mov        r6,#0x6000
+	movt       r6,#0x7000
+	mov        r7,#0x0041
+	movt       r7,#0x0000
+	str        r7,[r6,#0x0]
+	mov        r7,#0x0042
+	str        r7,[r6,#0x0]
 	b	save_boot_params
 save_boot_params_ret:
 #ifdef CONFIG_POSITION_INDEPENDENT

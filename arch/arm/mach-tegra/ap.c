@@ -191,6 +191,7 @@ static void smmu_flush(struct mc_ctlr *mc)
 
 static void smmu_enable(void)
 {
+	printf("enables SMMU\n");
 	struct mc_ctlr *mc = (struct mc_ctlr *)NV_PA_MC_BASE;
 	u32 value;
 
@@ -217,6 +218,7 @@ static void smmu_enable(void)
 #else
 static void smmu_enable(void)
 {
+	printf("does not enable SMMU\n");
 }
 #endif
 

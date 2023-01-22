@@ -812,7 +812,14 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 	gd = new_gd;
 #endif
 	gd->flags &= ~GD_FLG_LOG_READY;
+	
 
+	asm volatile (  "ldr        r6, =0x70006000\n"
+			"mov        r7, #0x49\n"
+			"str        r7,[r6,#0x0]\n"
+			);
+
+	
 	if (IS_ENABLED(CONFIG_NEEDS_MANUAL_RELOC)) {
 		for (int i = 0; i < ARRAY_SIZE(init_sequence_r); i++)
 			MANUAL_RELOC(init_sequence_r[i]);

@@ -310,6 +310,8 @@ static int tegra_lcd_probe(struct udevice *dev)
 #ifdef CONFIG_TEGRA20
 	funcmux_select(PERIPH_ID_DISP1, FUNCMUX_DEFAULT);
 #endif
+	printf("tegra_lcd_probe: enter\n");
+
 	if (tegra_display_probe(blob, priv, (void *)plat->base)) {
 		printf("%s: Failed to probe display driver\n", __func__);
 		return -1;
@@ -337,6 +339,8 @@ static int tegra_lcd_probe(struct udevice *dev)
 	uc_priv->bpix = priv->log2_bpp;
 	debug("LCD frame buffer at %pa, size %x\n", &priv->frame_buffer,
 	      plat->size);
+	
+	printf("tegra_lcd_probe: all good\n");
 
 	return 0;
 }
@@ -403,13 +407,18 @@ static int tegra_lcd_bind(struct udevice *dev)
 	int node = dev_of_offset(dev);
 	int rgb;
 
+	printf("tegra_lcd_bind: enter\n");
+
 	rgb = fdt_subnode_offset(blob, node, "rgb");
-	if ((rgb < 0) || !fdtdec_get_is_enabled(blob, rgb))
+	if ((rgb < 0) || !fdtdec_get_is_enabled(blob, rgb)) {
+		printf("tegra_lcd_bind: abort\n");
 		return -ENODEV;
+	}
 
 	plat->size = LCD_MAX_WIDTH * LCD_MAX_HEIGHT *
 		(1 << LCD_MAX_LOG2_BPP) / 8;
 
+	printf("tegra_lcd_bind: all good\n");
 	return 0;
 }
 

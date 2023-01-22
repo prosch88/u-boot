@@ -119,7 +119,7 @@
 		pwms = <&pwm 0 4000000>;
 
 		brightness-levels = <228 255>;
-		default-brightness-level = <228>;
+		default-brightness-level = <255>;
 	};
 
 	clocks {

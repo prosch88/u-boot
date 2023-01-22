@@ -254,19 +254,23 @@ efi_status_t efi_init_obj_list(void)
 	if (ret != EFI_SUCCESS)
 		goto out;
 
+	
 	if (IS_ENABLED(CONFIG_EFI_ECPT)) {
+		printf("ECPT\n");
 		ret = efi_ecpt_register();
 		if (ret != EFI_SUCCESS)
 			goto out;
 	}
-
+	
 	if (IS_ENABLED(CONFIG_EFI_ESRT)) {
+		printf("ESRT\n");
 		ret = efi_esrt_register();
 		if (ret != EFI_SUCCESS)
 			goto out;
 	}
-
+	
 	if (IS_ENABLED(CONFIG_EFI_TCG2_PROTOCOL)) {
+		printf("TCG2\n");
 		ret = efi_tcg2_register();
 		if (ret != EFI_SUCCESS)
 			goto out;
@@ -275,66 +279,81 @@ efi_status_t efi_init_obj_list(void)
 		if (ret == EFI_SECURITY_VIOLATION)
 			goto out;
 	}
-
+	
 	/* Install EFI_RNG_PROTOCOL */
 	if (IS_ENABLED(CONFIG_EFI_RNG_PROTOCOL)) {
+		printf("RNG\n");
 		ret = efi_rng_register();
 		if (ret != EFI_SUCCESS)
 			goto out;
 	}
 
 	if (IS_ENABLED(CONFIG_EFI_RISCV_BOOT_PROTOCOL)) {
+		printf("RISC V o.O\n");
 		ret = efi_riscv_register();
 		if (ret != EFI_SUCCESS)
 			goto out;
 	}
 
 	/* Secure boot */
+	printf("secure boot\n");
 	ret = efi_init_secure_boot();
 	if (ret != EFI_SUCCESS)
 		goto out;
 
 	/* Indicate supported runtime services */
+	printf("runtime\n");
 	ret = efi_init_runtime_supported();
 	if (ret != EFI_SUCCESS)
 		goto out;
 
 	if (IS_ENABLED(CONFIG_EFI_HAVE_CAPSULE_SUPPORT)) {
+		printf("capsule\n");
 		ret = efi_load_capsule_drivers();
 		if (ret != EFI_SUCCESS)
 			goto out;
 	}
 
 	if (IS_ENABLED(CONFIG_VIDEO)) {
+		printf("video\n");
 		ret = efi_gop_register();
+		printf("video end\n");
 		if (ret != EFI_SUCCESS)
 			goto out;
 	}
 #ifdef CONFIG_NETDEVICES
+	printf("net devices\n");
 	ret = efi_net_register();
 	if (ret != EFI_SUCCESS)
 		goto out;
 #endif
 #ifdef CONFIG_GENERATE_ACPI_TABLE
+	printf("acpi\n");
 	ret = efi_acpi_register();
 	if (ret != EFI_SUCCESS)
 		goto out;
 #endif
 #ifdef CONFIG_GENERATE_SMBIOS_TABLE
+	printf("smbios\n");
 	ret = efi_smbios_register();
+	printf("smbios end\n");
 	if (ret != EFI_SUCCESS)
 		goto out;
 #endif
+	printf("watchdog\n");
 	ret = efi_watchdog_register();
 	if (ret != EFI_SUCCESS)
 		goto out;
 
+	printf("init capsule\n");
 	ret = efi_init_capsule();
 	if (ret != EFI_SUCCESS)
 		goto out;
 
 	/* Initialize EFI runtime services */
+	printf("reset system\n");
 	ret = efi_reset_system_init();
+	printf("reset system %ld\n", ret);
 	if (ret != EFI_SUCCESS)
 		goto out;
 
@@ -343,6 +362,7 @@ efi_status_t efi_init_obj_list(void)
 	    !IS_ENABLED(CONFIG_EFI_CAPSULE_ON_DISK_EARLY))
 		ret = efi_launch_capsules();
 out:
+	printf("out: %ld\n", ret);
 	efi_obj_list_initialized = ret;
 	return ret;
 }

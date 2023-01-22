@@ -26,9 +26,11 @@ efi_status_t efi_smbios_register(void)
 	void *dmi;
 
 	/* Reserve 4kiB page for SMBIOS */
+	printf("allocate pages\n");
 	ret = efi_allocate_pages(EFI_ALLOCATE_MAX_ADDRESS,
 				 EFI_RUNTIME_SERVICES_DATA, 1, &dmi_addr);
-
+	
+	printf("allocate pages\n");
 	if (ret != EFI_SUCCESS) {
 		/* Could not find space in lowmem, use highmem instead */
 		ret = efi_allocate_pages(EFI_ALLOCATE_ANY_PAGES,
@@ -46,6 +48,7 @@ efi_status_t efi_smbios_register(void)
 	 */
 	assert(!(dmi_addr & 0xf));
 	dmi = (void *)(uintptr_t)dmi_addr;
+	printf("write smbios table\n");
 	if (write_smbios_table(map_to_sysmem(dmi)))
 		/* Install SMBIOS information as configuration table */
 		return efi_install_configuration_table(&smbios_guid, dmi);

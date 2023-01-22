@@ -116,6 +116,10 @@ ENTRY(_main)
 	bl	board_init_f_init_reserve
 
 #if defined(CONFIG_DEBUG_UART) && CONFIG_IS_ENABLED(SERIAL)
+	ldr        r6, =0x70006000
+	mov        r7,#0x0043
+	str        r7,[r6,#0x0]
+
 	bl	debug_uart_init
 #endif
 

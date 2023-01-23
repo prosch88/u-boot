@@ -10,6 +10,40 @@
 
 #include "tegra30-common.h"
 
+/* Stolen from 'test/dm/video.c' */
+#define ANSI_ESC "\x1b"
+
+/* Stolen from 'drivers/video/vidconsole-uclass.c */
+/*
+ * Foreground Colors:
+ *
+ *   30	Black
+ *   31	Red
+ *   32	Green
+ *   33	Yellow
+ *   34	Blue
+ *   35	Magenta
+ *   36	Cyan
+ *   37	White
+ *
+ * Background Colors:
+ *
+ *   40	Black
+ *   41	Red
+ *   42	Green
+ *   43	Yellow
+ *   44	Blue
+ *   45	Magenta
+ *   46	Cyan
+ *   47	White
+ */
+#define COLOR_WHITE_BLACK ANSI_ESC"[37';'40m"
+#define COLOR_BLACK_WHITE ANSI_ESC"[30';'47m"
+#define COLOR_BLACK_RED ANSI_ESC"[30';'41m"
+#define COLOR_BLACK_YELLOW ANSI_ESC"[30';'43m"
+#define COLOR_BLACK_GREEN ANSI_ESC"[30';'42m"
+
+
 /* High-level configuration options */
 #define CONFIG_TEGRA_BOARD_STRING	"Microsoft Surface RT"
 
@@ -29,119 +63,123 @@
                "load mmc 1:1 ${kernel_addr_r} /uImage;" \
                "bootm ${kernel_addr_r}\0"
 
+#define SURFACE_RT_ENV_FAIL \
+	"echo Press any key to continue;" \
+	"continue;" \
+
 #define SURFACE_RT_ENV_COMMON \
 	"loaded_dtb=0;" \
 	"loaded_initramfs=0;" \
-	"usb start;" \
 	"if test -n ${dtb_file}; then " \
 		"if test -e ${dev_type} ${load_dev}:${load_part} ${dtb_file}; then " \
 			"if load ${dev_type} ${load_dev}:${load_part} ${fdt_addr_r} ${dtb_file}; then " \
-				"echo Loaded DTB;" \
+				"echo "COLOR_BLACK_GREEN"Loaded DTB"COLOR_WHITE_BLACK";" \
 				"loaded_dtb=1;" \
 			"fi;" \
 		"else " \
-			"echo <error> DTB not found;" \
+			"echo "COLOR_BLACK_RED"<error>"COLOR_WHITE_BLACK" DTB not found;" \
+			"echo "COLOR_BLACK_WHITE"Please check your dtb_file= var"COLOR_WHITE_BLACK";" \
+			SURFACE_RT_ENV_FAIL \
 		"fi;" \
 	"else " \
-		"echo <warn> DTB not specified;" \
+		"echo "COLOR_BLACK_YELLOW"<warn>"COLOR_WHITE_BLACK" DTB not specified;" \
 	"fi;" \
 	"if test -n ${ramdisk_file}; then " \
 		"if test -e ${dev_type} ${load_dev}:${load_part} ${ramdisk_file}; then " \
 			"if load ${dev_type} ${load_dev}:${load_part} ${ramdisk_addr_r} ${ramdisk_file}; then " \
-				"echo Loaded Initramfs;" \
+				"echo Loaded Initramfs"COLOR_WHITE_BLACK";" \
 				"loaded_initramfs=1;" \
 			"fi;" \
 		"else " \
-			"echo <error> Initramfs not found;" \
+			"echo "COLOR_BLACK_RED"<error>"COLOR_WHITE_BLACK" Initramfs not found;" \
+			"echo "COLOR_BLACK_WHITE"Please check your ramdisk_file= var"COLOR_WHITE_BLACK";" \
+			SURFACE_RT_ENV_FAIL \
 		"fi;" \
 	"else " \
-		"echo <warn> Initramfs not specified;" \
+		"echo "COLOR_BLACK_YELLOW"<warn>"COLOR_WHITE_BLACK" Initramfs not specified;" \
 	"fi;" \
 	"if test -n ${kernel_file}; then " \
 		"if test -e ${dev_type} ${load_dev}:${load_part} ${kernel_file}; then " \
 			"if load ${dev_type} ${load_dev}:${load_part} ${kernel_addr_r} ${kernel_file}; then " \
-				"echo Loaded Kernel;" \
+				"echo "COLOR_BLACK_GREEN"Loaded Kernel"COLOR_WHITE_BLACK";" \
 				"if test $loaded_dtb -eq 1 && test $loaded_initramfs -eq 1; then " \
-					"echo kernel / dt / init;" \
+					"echo "COLOR_BLACK_GREEN"kernel / dt / init"COLOR_WHITE_BLACK";" \
 					"bootz ${kernel_addr_r} ${ramdisk_addr_r} ${fdt_addr_r};" \
 				"elif test $loaded_dtb -eq 1; then " \
-					"echo kernel / dt;" \
+					"echo "COLOR_BLACK_GREEN"kernel / dt"COLOR_WHITE_BLACK";" \
 					"bootz ${kernel_addr_r} - ${fdt_addr_r};" \
 				"elif test $loaded_initramfs -eq 1; then " \
-					"echo kernel / init;" \
+					"echo "COLOR_BLACK_GREEN"kernel / init"COLOR_WHITE_BLACK";" \
 					"bootz ${kernel_addr_r} ${ramdisk_addr_r};" \
 				"else " \
-					"echo kernel;" \
+					"echo "COLOR_BLACK_GREEN"kernel"COLOR_WHITE_BLACK";" \
 					"bootz ${kernel_addr_r};" \
 				"fi;" \
 			"fi;" \
 		"else " \
-			"echo <error> Kernel not found;" \
+			"echo "COLOR_BLACK_RED"<error>"COLOR_WHITE_BLACK" Kernel not found;" \
+			"echo "COLOR_BLACK_WHITE"Please check your kernel_file= var"COLOR_WHITE_BLACK";" \
+			SURFACE_RT_ENV_FAIL \
 		"fi;" \
 	"else " \
-		"echo <error> Kernel not specified;" \
+		"echo "COLOR_BLACK_RED"<error>"COLOR_WHITE_BLACK" Kernel not specified;" \
+		"echo "COLOR_BLACK_WHITE"Please check your kernel_file= var"COLOR_WHITE_BLACK";" \
+		SURFACE_RT_ENV_FAIL \
 	"fi;" \
-	"\0"
-
-#define SURFACE_RT_ENV_SD \
-	"boot_env_sd=echo Loading boot env from SD;" \
-		"if load mmc 1:1 ${loadaddr} uboot.env; then " \
-			"env import -t -r ${loadaddr} ${filesize};" \
-		"else " \
-			"echo Boot env NOT FOUND on SD!;" \
-			"echo continues in 5s;" \
-			"sleep 5;" \
-			"bootmenu;" \
-		"fi;" \
-		SURFACE_RT_ENV_COMMON
 
 #define SURFACE_RT_ENV_MMC \
 	"boot_env_mmc=echo Loading boot env from MMC;" \
 		"if load mmc 0:1 ${loadaddr} uboot.env; then " \
 			"env import -t -r ${loadaddr} ${filesize};" \
+			SURFACE_RT_ENV_COMMON \
 		"else " \
-			"echo Boot env NOT FOUND on eMMC!;" \
-			"echo continues in 5s;" \
-			"sleep 5;" \
-			"bootmenu;" \
+			"echo "COLOR_BLACK_WHITE"Boot env NOT FOUND on eMMC!"COLOR_WHITE_BLACK";" \
+			SURFACE_RT_ENV_FAIL \
 		"fi;" \
-		SURFACE_RT_ENV_COMMON
+		"\0"
+
+#define SURFACE_RT_ENV_SD \
+	"boot_env_sd=echo Loading boot env from SD;" \
+		"if load mmc 1:1 ${loadaddr} uboot.env; then " \
+			"env import -t -r ${loadaddr} ${filesize};" \
+			SURFACE_RT_ENV_COMMON \
+		"else " \
+			"echo "COLOR_BLACK_WHITE"Boot env NOT FOUND on SD!"COLOR_WHITE_BLACK";" \
+			SURFACE_RT_ENV_FAIL \
+		"fi;" \
+		"\0"
 
 #define SURFACE_RT_ENV_USB \
 	"boot_env_usb=echo Loading boot env from USB;" \
 		"usb start;" \
 		"if load usb 0:1 ${loadaddr} uboot.env; then " \
 			"env import -t -r ${loadaddr} ${filesize};" \
+			SURFACE_RT_ENV_COMMON \
 		"else " \
-			"echo Boot env NOT FOUND on USB!;" \
-			"echo continues in 5s;" \
-			"sleep 5;" \
-			"bootmenu;" \
+			"echo "COLOR_BLACK_WHITE"Boot env NOT FOUND on USB!"COLOR_WHITE_BLACK";" \
+			SURFACE_RT_ENV_FAIL \
 		"fi;" \
-		SURFACE_RT_ENV_COMMON
+		"\0"
 
 #define BOARD_EXTRA_ENV_SETTINGS \
-	"kernel_addr_r=0x80008000\0" \
-	"dtb_addr_r=0x83000000\0" \
-	"ramdisk_addr_r=0x84000000\0" \
-	"script_addr_r=0x87000000\0" \
 	"bootkernel=bootz ${kernel_addr_r}\0" \
 	"bootrdkernel=bootz ${kernel_addr_r} ${ramdisk_addr_r}\0" \
-	"bootdtkernel=bootz ${kernel_addr_r} - ${dtb_addr_r}\0" \
-	"bootdtrdkernel=bootz ${kernel_addr_r} ${ramdisk_addr_r} ${dtb_addr_r}\0" \
+	"bootdtkernel=bootz ${kernel_addr_r} - ${fdt_addr_r}\0" \
+	"bootdtrdkernel=bootz ${kernel_addr_r} ${ramdisk_addr_r} ${fdt_addr_r}\0" \
 	SURFACE_RT_BOOT_SCRIPT_SD \
 	SURFACE_RT_BOOT_SCRIPT_MMC \
 	SURFACE_RT_BOOT_DOWNSTREAM_SD \
+	SURFACE_RT_ENV_MMC \
 	SURFACE_RT_ENV_SD \
 	SURFACE_RT_ENV_USB \
-	"bootmenu_0=Linux=boot\0" \
-	"bootmenu_1=Env USB=run boot_env_usb; sleep 10; bootmenu;\0" \
-	"bootmenu_2=Env SD=run boot_env_sd; sleep 10; bootmenu;\0" \
+	"bootmenu_0=Env USB=run boot_env_usb; bootmenu;\0" \
+	"bootmenu_1=Env MMC=run boot_env_mmc; bootmenu;\0" \
+	"bootmenu_2=Env SD=run boot_env_sd; bootmenu;\0" \
 	"bootmenu_3=USB Mass Storage - eMMC=ums 0 mmc 0; bootmenu;\0" \
 	"bootmenu_4=USB Mass Storage - SD Card=ums 0 mmc 1; bootmenu;\0" \
 	"bootmenu_5=Fastboot=fastboot usb 0\0" \
 	"bootmenu_6=RCM Mode=enterrcm\0" \
-	"bootmenu_delay=-1\0"
+	"bootmenu_delay=3\0"
 
 /* Board-specific serial config */
 #define CONFIG_TEGRA_ENABLE_UARTA

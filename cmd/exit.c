@@ -11,7 +11,7 @@ static int do_continue(struct cmd_tbl *cmdtp, int flag, int argc,
 		   char *const argv[])
 {
 	while (true) {
-		if (tstc())
+		if (getchar())
 			break;
 	}
 

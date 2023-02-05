@@ -116,10 +116,10 @@
 
 		enable-gpios = <&gpio TEGRA_GPIO(DD, 0) GPIO_ACTIVE_HIGH>;
 		power-supply = <&vdd_5v0_bl>;
-		pwms = <&pwm 0 4000000>;
+		pwms = <&pwm 0 50000>;
 
-		brightness-levels = <228 255>;
-		default-brightness-level = <228>;
+		brightness-levels = <16 255>;
+		default-brightness-level = <128>;
 	};
 
 	clocks {
@@ -156,7 +156,7 @@
 	};
 	
 	gpio-keyboard {
-		compatible = "gpio-keys-input";
+		compatible = "gpio-kbd";
 
 		power {
 			label = "Power";

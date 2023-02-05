@@ -34,7 +34,47 @@
 #define TPS65911_GPIO8		0x68
 
 #define TPS65911_DEVCTRL	0x3F
+#define DEVCTRL_PWR_OFF_MASK	0x80
+#define DEVCTRL_DEV_OFF_MASK	0x01
+#define DEVCTRL_DEV_ON_MASK	0x04
 
+#ifdef CONFIG_CMD_POWEROFF
+int do_poweroff(struct cmd_tbl *cmdtp, int flag,
+		int argc, char *const argv[])
+{
+	struct udevice *dev;
+	uchar data_buffer[1];
+	int ret;
+
+	ret = i2c_get_chip_for_busnum(0, PMU_I2C_ADDRESS, 1, &dev);
+	if (ret) {
+		debug("%s: Cannot find PMIC I2C chip\n", __func__);
+		return 0;
+	}
+
+	ret = dm_i2c_read(dev, TPS65911_DEVCTRL, data_buffer, 1);
+	if (ret)
+		return ret;
+
+	data_buffer[0] |= DEVCTRL_PWR_OFF_MASK;
+
+	ret = dm_i2c_write(dev, TPS65911_DEVCTRL, data_buffer, 1);
+	if (ret)
+		return ret;
+
+	data_buffer[0] |= DEVCTRL_DEV_OFF_MASK;
+	data_buffer[0] &= ~DEVCTRL_DEV_ON_MASK;
+
+	ret = dm_i2c_write(dev, TPS65911_DEVCTRL, data_buffer, 1);
+	if (ret)
+		return ret;
+
+	// wait some time and then print error
+	mdelay(5000);
+	printf("Failed to power off!!!\n");
+	return 1;
+}
+#endif
 
 /*
  * Routine: pinmux_init

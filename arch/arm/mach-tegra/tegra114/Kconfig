@@ -11,6 +11,10 @@ config TARGET_DALMORE
 config TARGET_TRANSFORMER_T114
 	bool "ASUS Tegra114 Transformer board"
 	select BOARD_LATE_INIT
+	
+config TARGET_SURFACE_2
+	bool "Microsoft Tegra114 Surface 2 board"
+	select BOARD_LATE_INIT
 
 endchoice
 
@@ -19,5 +23,6 @@ config SYS_SOC
 
 source "board/asus/transformer-t114/Kconfig"
 source "board/nvidia/dalmore/Kconfig"
+source "board/microsoft/surface-2/Kconfig"
 
 endif

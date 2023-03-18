@@ -250,6 +250,7 @@ dtb-$(CONFIG_ARCH_TEGRA) += \
 	tegra30-tec-ng.dtb \
 	tegra114-asus-tf701t.dts \
 	tegra114-dalmore.dtb \
+	tegra114-microsoft-surface-2.dtb \
 	tegra124-apalis.dtb \
 	tegra124-jetson-tk1.dtb \
 	tegra124-nyan-big.dtb \

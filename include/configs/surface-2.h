@@ -20,4 +20,10 @@
 
 #include "tegra-common-post.h"
 
+#undef CONFIG_BOOTCOMMAND
+#define CONFIG_BOOTCOMMAND \
+	"env set serial# 0123456789123456;" \
+	"env set platform \"Tegra 4 T114\";" \
+	"fastboot usb 0;"
+
 #endif /* __CONFIG_H */

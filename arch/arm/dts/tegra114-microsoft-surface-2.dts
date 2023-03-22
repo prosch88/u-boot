@@ -58,10 +58,16 @@
 		status = "disabled";
 	};
 
+	sdhci@78000600 {
+		status = "okay";
+		bus-width = <8>;
+		non-removable;
+	};
+
 	usb@7d000000 {
 		status = "okay";
 		dr_mode = "otg";
-		nvidia,vbus-gpio = <&gpio TEGRA_GPIO(N, 4) GPIO_ACTIVE_HIGH>;
+		nvidia,vbus-gpio = <&gpio TEGRA_GPIO(K, 1) GPIO_ACTIVE_HIGH>;
 	};
 
 

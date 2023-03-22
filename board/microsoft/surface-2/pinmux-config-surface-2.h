@@ -81,9 +81,21 @@
 	}
 
 static struct pmux_pingrp_config tegra114_pinmux_common[] = {
+	// For UART only
 	DEFAULT_PINMUX(SDMMC3_CMD_PA7,    UARTA,      DOWN,        TRISTATE,   INPUT),
 	DEFAULT_PINMUX(SDMMC3_DAT1_PB6,   UARTA,      NORMAL,        NORMAL,   OUTPUT),
 	
+	/* SDMMC3 pinmux */
+	/*
+	DEFAULT_PINMUX(SDMMC3_CLK_PA6,    SDMMC3,      NORMAL,    NORMAL,   INPUT),
+	DEFAULT_PINMUX(SDMMC3_CMD_PA7,    SDMMC3,      UP,        NORMAL,   INPUT),
+	DEFAULT_PINMUX(SDMMC3_DAT0_PB7,   SDMMC3,      UP,        NORMAL,   INPUT),
+	DEFAULT_PINMUX(SDMMC3_DAT1_PB6,   SDMMC3,      UP,        NORMAL,   INPUT),
+	DEFAULT_PINMUX(SDMMC3_DAT2_PB5,   SDMMC3,      UP,        NORMAL,   INPUT),
+	DEFAULT_PINMUX(SDMMC3_DAT3_PB4,   SDMMC3,      UP,        NORMAL,   INPUT),
+	DEFAULT_PINMUX(SDMMC3_CLK_LB_IN_PEE5,  SDMMC3,  UP,        TRISTATE, INPUT),
+	DEFAULT_PINMUX(SDMMC3_CLK_LB_OUT_PEE4, SDMMC3,  DOWN,      NORMAL,   INPUT),
+	*/
 };
 
 static struct pmux_pingrp_config unused_pins_lowpower[] = {

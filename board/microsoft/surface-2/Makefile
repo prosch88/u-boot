@@ -2,4 +2,6 @@
 #
 # Copyright (c) 2010-2013, NVIDIA CORPORATION.  All rights reserved.
 
-obj-y	:= surface-2.o
+obj-$(CONFIG_SPL_BUILD) += surface-2-spl.o
+
+obj-y	+= surface-2.o

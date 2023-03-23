@@ -2,6 +2,9 @@
 
 #include "tegra114.dtsi"
 
+#include <dt-bindings/input/gpio-keys.h>
+#include <dt-bindings/input/linux-event-codes.h>
+
 / {
 	model = "Microsoft Surface 2";
 	compatible = "microsoft,surface-2", "nvidia,tegra114";
@@ -11,11 +14,11 @@
 	};
 
 	aliases {
-		i2c0 = "/i2c@7000d000";
-		i2c1 = "/i2c@7000c000";
-		i2c2 = "/i2c@7000c400";
-		i2c3 = "/i2c@7000c500";
-		i2c4 = "/i2c@7000c700";
+		i2c0 = "/i2c@7000c000";
+		i2c1 = "/i2c@7000c400";
+		i2c2 = "/i2c@7000c500";
+		i2c3 = "/i2c@7000c700";
+		i2c4 = "/i2c@7000d000";
 		mmc0 = "/sdhci@78000600";
 		mmc1 = "/sdhci@78000400";
 		usb0 = "/usb@7d000000";
@@ -74,7 +77,7 @@
 	sdhci@78000400 {
 		cd-gpios = <&gpio TEGRA_GPIO(V, 2) GPIO_ACTIVE_LOW>;
 		bus-width = <4>;
-		status = "okay";
+		status = "disabled";
 	};
 
 	sdhci@78000600 {
@@ -102,8 +105,37 @@
 			clock-frequency = <32768>;
 		};
 	};
+
+	/* Doesn't work right now? */
+	gpio-keys {
+		compatible = "gpio-keys";
+
+		power {
+			label = "Power Button";
+			gpios = <&gpio TEGRA_GPIO(V, 0) GPIO_ACTIVE_HIGH>;
+			linux,code = <KEY_CANCEL>;
+		};
+
+		windows-button {
+			label = "Windows Button";
+			gpios = <&gpio TEGRA_GPIO(I, 5) GPIO_ACTIVE_HIGH>;
+			linux,code = <KEY_ENTER>;
+		};
+
+		volume-down {
+			label = "Volume Down";
+			gpios = <&gpio TEGRA_GPIO(R, 1) GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_DOWN>;
+		};
+
+		volume-up {
+			label = "Volume Up";
+			gpios = <&gpio TEGRA_GPIO(R, 2) GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_UP>;
+		};
+	};
 };
 
 &uarta {
-	status = "disabled";
+	status = "okay";
 };

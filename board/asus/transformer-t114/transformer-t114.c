@@ -19,12 +19,20 @@
 
 #define PMU_I2C_ADDRESS			0x58	/* TPS65913 PMU */
 
+/* page 1 */
 #define TPS65913_SMPS9_CTRL		0x38
 #define TPS65913_SMPS9_VOLTAGE		0x3B
+#define TPS65913_LDO2_CTRL		0x52
+#define TPS65913_LDO2_VOLTAGE		0x53
 #define TPS65913_LDO9_CTRL		0x60
 #define TPS65913_LDO9_VOLTAGE		0x61
 #define TPS65913_LDOUSB_CTRL		0x64
 #define TPS65913_LDOUSB_VOLTAGE		0x65
+
+/* page 2 */
+#define TPS65913_GPIO_DATA_DIR		0x81
+#define TPS65913_GPIO_DATA_OUT		0x82
+#define TPS65913_GPIO_4_MASK		BIT(4)
 
 #define TPS65913_DEV_CTRL		0xA0
 #define TPS65913_INT3_MASK		0x1B
@@ -113,6 +121,17 @@ void board_sdmmc_voltage_init(void)
 	if (ret)
 		printf("%s: SMPS9 enable returned %d\n", __func__, ret);
 
+	/* TPS65913: LDO2_VOLTAGE = 1.2V */
+	ret = dm_i2c_reg_write(dev, TPS65913_LDO2_VOLTAGE, 0x07);
+	if (ret)
+		printf("%s: PMU i2c_write LDO2 < 1.8v returned %d\n",
+			__func__, ret);
+
+	/* TPS65913: LDO2_CTRL = Active */
+	ret = dm_i2c_reg_write(dev, TPS65913_LDO2_CTRL, 0x01);
+	if (ret)
+		printf("%s: LDO2 enable returned %d\n", __func__, ret);
+
 	/* TPS65913: LDO9_VOLTAGE = 1.8V */
 	ret = dm_i2c_reg_write(dev, TPS65913_LDO9_VOLTAGE, 0x13);
 	if (ret)
@@ -134,6 +153,31 @@ void board_sdmmc_voltage_init(void)
 	ret = dm_i2c_reg_write(dev, TPS65913_LDOUSB_CTRL, 0x01);
 	if (ret)
 		printf("%s: LDOUSB enable returned %d\n", __func__, ret);
+
+	/* TPS65913: configure GPIO 4 */
+	ret = i2c_get_chip_for_busnum(0, PMU_I2C_ADDRESS + 1, 1, &dev);
+	if (ret) {
+		printf("%s: Cannot find PMIC I2C chip\n", __func__);
+		return;
+	}
+
+	ret = dm_i2c_reg_read(dev, TPS65913_GPIO_DATA_DIR);
+	if (ret)
+		printf("%s: GPIO direction read fail %d\n", __func__, ret);
+
+	ret = dm_i2c_reg_write(dev, TPS65913_GPIO_DATA_DIR,
+			       ret | TPS65913_GPIO_4_MASK);
+	if (ret)
+		printf("%s: GPIO 4 dir output set fail %d\n", __func__, ret);
+
+	ret = dm_i2c_reg_read(dev, TPS65913_GPIO_DATA_OUT);
+	if (ret)
+		printf("%s: GPIO output read fail %d\n", __func__, ret);
+
+	ret = dm_i2c_reg_write(dev, TPS65913_GPIO_DATA_OUT,
+			       ret | TPS65913_GPIO_4_MASK);
+	if (ret)
+		printf("%s: GPIO 4 output on set fail %d\n", __func__, ret);
 }
 
 /*

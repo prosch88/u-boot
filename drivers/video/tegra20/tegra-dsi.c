@@ -20,7 +20,7 @@
 #include <asm/io.h>
 #include <asm/arch/clock.h>
 #include <asm/arch/display.h>
-#include <asm/arch-tegra30/dsi.h>
+#include <asm/arch-tegra/dsi.h>
 
 #include "mipi-phy.h"
 
@@ -669,7 +669,7 @@ static int tegra_dsi_encoder_enable(struct udevice *dev)
 	/* Disable interrupt */
 	writel(0, &misc->int_enable);
 
-	tegra_dsi_pad_calibrate(&priv->dsi->pad);
+//	tegra_dsi_pad_calibrate(&priv->dsi->pad);
 
 	tegra_dsi_get_muldiv(device->format, &mul, &div);
 
@@ -785,6 +785,10 @@ static void tegra_dsi_init_clocks(struct udevice *dev)
 	clock_enable(priv->dsi_clk);
 	udelay(2);
 	reset_set_enable(priv->dsi_clk, 0);
+
+	clock_enable(PERIPH_ID_DSIA_LP);
+	udelay(2);
+	reset_set_enable(PERIPH_ID_DSIA_LP, 0);
 }
 
 static int tegra_dsi_bridge_probe(struct udevice *dev)
@@ -850,6 +854,7 @@ static const struct panel_ops tegra_dsi_bridge_ops = {
 
 static const struct udevice_id tegra_dsi_bridge_ids[] = {
 	{ .compatible = "nvidia,tegra30-dsi" },
+	{ .compatible = "nvidia,tegra114-dsi" },
 	{ }
 };
 

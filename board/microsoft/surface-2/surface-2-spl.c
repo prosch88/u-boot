@@ -14,7 +14,7 @@
 #include <linux/delay.h>
 
 /* I2C addr is in 8 bit */
-#define TPS65913_I2C_ADDR		0xB0
+#define TPS65913_I2C_ADDR		(0x58 << 1)
 
 #define TPS65913_SMPS12_CTRL		0x20
 #define TPS65913_SMPS12_VOLTAGE		0x23

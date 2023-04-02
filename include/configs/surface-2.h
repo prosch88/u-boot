@@ -172,9 +172,9 @@
 	SURFACE_RT_ENV_MMC \
 	SURFACE_RT_ENV_SD \
 	SURFACE_RT_ENV_USB \
-	"bootmenu_0=Env USB=run boot_env_usb; bootmenu;\0" \
-	"bootmenu_1=Env MMC=run boot_env_mmc; bootmenu;\0" \
-	"bootmenu_2=Env SD=run boot_env_sd; bootmenu;\0" \
+	"bootmenu_0=Env USB=run boot_env_usb; sleep 10; bootmenu;\0" \
+	"bootmenu_1=Env MMC=run boot_env_mmc; sleep 10; bootmenu;\0" \
+	"bootmenu_2=Env SD=run boot_env_sd; sleep 10; bootmenu;\0" \
 	"bootmenu_3=USB Mass Storage - eMMC=ums 0 mmc 0; bootmenu;\0" \
 	"bootmenu_4=USB Mass Storage - SD Card=ums 0 mmc 1; bootmenu;\0" \
 	"bootmenu_5=Fastboot=fastboot usb 0\0" \

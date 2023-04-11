@@ -94,6 +94,8 @@ static int button_kbd_probe(struct udevice *dev)
 	struct input_config *input = &uc_priv->input;
 	int ret = 0;
 
+	printf("BUTTON KEYBOARD\n");
+
 	input_init(input, false);
 	input_add_tables(input, false);
 

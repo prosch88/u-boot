@@ -92,6 +92,8 @@ void board_sdmmc_voltage_init(void)
 	uchar reg, data_buffer[1];
 	int ret;
 
+	
+
 	ret = i2c_get_chip_for_busnum(4, PMU_I2C_ADDRESS, 1, &dev);
 	if (ret) {
 		debug("%s: Cannot find PMIC I2C chip\n", __func__);
@@ -256,8 +258,8 @@ void board_sdmmc_voltage_init(void)
 		printf("%s: PMU i2c_write %02X<-%02X returned %d\n", __func__, reg, data_buffer[0], ret);
 
 
-
 	init_tps65090();
+	
 }
 
 /*

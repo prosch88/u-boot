@@ -22,12 +22,54 @@
 		mmc0 = "/sdhci@78000600";
 		mmc1 = "/sdhci@78000400";
 		usb0 = "/usb@7d000000";
-
 	};
 
 	memory {
 		device_type = "memory";
 		reg = <0x80000000 0x80000000>;
+	};
+
+	host1x@50000000 {
+		dc@54200000 {
+			clocks = <&tegra_car TEGRA114_CLK_DISP1>,
+				 <&tegra_car TEGRA114_CLK_PLL_D_OUT0>;
+
+			rgb {
+				status = "okay";
+
+				nvidia,panel = <&dsia>;
+			};
+		};
+
+		dsia: dsi@54300000 {
+			status = "okay";
+
+			clocks = <&tegra_car TEGRA114_CLK_DSIA>;
+			panel = <&panel>;
+		};
+	};
+
+	panel: panel {
+		compatible = "samsung,106hl02";
+		//reset-gpios = <&gpio TEGRA_GPIO(K, 6) GPIO_ACTIVE_HIGH>;
+
+		//power-supply = <&tps65090_fet4>;
+
+		backlight = <&backlight>;
+	};
+
+	pwm: pwm@7000a000 {
+		status = "okay";
+	};
+
+	backlight: backlight {
+		compatible = "pwm-backlight";
+
+		enable-gpios = <&gpio TEGRA_GPIO(CC, 2) GPIO_ACTIVE_HIGH>;
+		pwms = <&pwm 0 1000000>;
+
+		brightness-levels = <16 255>;
+		default-brightness-level = <255>;
 	};
 
 	i2c@7000c000 {
@@ -53,25 +95,6 @@
 	i2c@7000d000 {
 		status = "okay";
 		clock-frequency = <400000>;
-		
-		pmic: tps65913@58 {
-			compatible = "ti,tps65913", "ti,palmas";
-			reg = <0x58>;
-
-			regulators {
-				tps65913_smps9: smps9 {
-					regulator-name = "vdd-sd";
-					regulator-min-microvolt = <2900000>;
-					regulator-max-microvolt = <2900000>;
-				};
-
-				tps65913_ldo9: ldo9 {
-					regulator-name = "vdd-sdmmc";
-					regulator-min-microvolt = <1800000>;
-					regulator-max-microvolt = <1800000>;
-				};
-			};
-		};
 	};
 
 	sdhci@78000400 {
@@ -89,7 +112,7 @@
 	usb@7d000000 {
 		status = "okay";
 		dr_mode = "otg";
-		nvidia,vbus-gpio = <&gpio TEGRA_GPIO(K, 1) GPIO_ACTIVE_HIGH>;
+		//nvidia,vbus-gpio = <&gpio TEGRA_GPIO(N, 4) GPIO_ACTIVE_HIGH>;
 	};
 
 
@@ -105,15 +128,14 @@
 			clock-frequency = <32768>;
 		};
 	};
-
-	/* Doesn't work right now? */
+	
 	gpio-keys {
 		compatible = "gpio-keys";
 
 		power {
 			label = "Power Button";
 			gpios = <&gpio TEGRA_GPIO(V, 0) GPIO_ACTIVE_HIGH>;
-			linux,code = <KEY_CANCEL>;
+			linux,code = <KEY_ENTER>;
 		};
 
 		windows-button {

@@ -15,7 +15,7 @@
 
 struct samsung_panel_priv {
 	struct udevice *backlight;
-	struct gpio_desc reset_gpio;
+	//struct gpio_desc reset_gpio;
 };
 
 static struct display_timing default_timing = {
@@ -63,10 +63,10 @@ static int samsung_panel_set_backlight(struct udevice *dev, int percent)
 	if (ret)
 		return ret;
 
-	mdelay(1000);
+	//mdelay(1000);
 
 // Panel start
-
+/*
 	ret = gpio_request_by_name(dev, "reset-gpios", 0,
 				   &priv->reset_gpio, GPIOD_IS_OUT);
 	if (ret) {
@@ -74,14 +74,14 @@ static int samsung_panel_set_backlight(struct udevice *dev, int percent)
 		return ret;
 	}
 
-	/* RESET PANEL */
+	// RESET PANEL
 	dm_gpio_set_value(&priv->reset_gpio, 0);
 	udelay(35000);
 	dm_gpio_set_value(&priv->reset_gpio, 1);
 	udelay(70000);
 
 	printf("Panel was reset :)\n");
-
+*/
 	/* TURN PANEL ON*/
 
 	ret = mipi_dsi_dcs_exit_sleep_mode(dsi);
